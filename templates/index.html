@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if query %}{{ query }} · {% endif %}VisualSearch</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="bar">
+    <a class="logo" href="{{ url_for('index') }}">VisualSearch</a>
+  </header>
+
+  <main class="page {% if not query %}home{% endif %}">
+    {% if not query %}
+      <h1>Search the web, with pictures.</h1>
+      <p class="lead">Ask a question and get source links alongside the images that go with it.</p>
+    {% endif %}
+
+    <form class="search" action="{{ url_for('index') }}" method="get">
+      <input type="search" name="q" value="{{ query }}" placeholder="How does a solar panel work?" autofocus required>
+      <button type="submit">Search</button>
+    </form>
+
+    {% for error in errors %}
+      <p class="error">{{ error }}</p>
+    {% endfor %}
+
+    {% if query %}
+      {% if summary %}
+        <section>
+          <h2>Summary</h2>
+          <ul class="summary">
+            {% for line in summary %}
+              <li>{{ line.text }} <a class="ref" href="#source-{{ line.ref }}">[{{ line.ref }}]</a></li>
+            {% endfor %}
+          </ul>
+          <p class="note">These are snippets taken directly from the sources below, not a generated answer.</p>
+        </section>
+      {% endif %}
+
+      <section>
+        <h2>Images</h2>
+        {% if images %}
+          <div class="grid">
+            {% for img in images %}
+              <a class="tile" href="{{ img.page }}" target="_blank" rel="noopener noreferrer">
+                <img src="{{ img.image }}" alt="{{ img.title }}" loading="lazy"
+                     onerror="this.closest('.tile').remove()">
+                <span class="caption">{{ img.domain or img.title }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        {% elif not errors %}
+          <p class="note">No images found.</p>
+        {% endif %}
+      </section>
+
+      <section>
+        <h2>Sources</h2>
+        {% if web %}
+          <ol class="sources">
+            {% for r in web %}
+              <li id="source-{{ loop.index }}">
+                <a class="title" href="{{ r.url }}" target="_blank" rel="noopener noreferrer">{{ r.title }}</a>
+                <span class="domain">{{ r.domain }}</span>
+                <p>{{ r.snippet }}</p>
+              </li>
+            {% endfor %}
+          </ol>
+        {% elif not errors %}
+          <p class="note">No web results found.</p>
+        {% endif %}
+      </section>
+    {% endif %}
+  </main>
+
+  <footer>Results come from third-party search engines. Check each source and its image licence before reusing anything.</footer>
+</body>
+</html>
