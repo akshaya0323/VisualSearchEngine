@@ -31,3 +31,7 @@ Then open http://127.0.0.1:5000.
 - Re-rank images against the query with CLIP.
 - Fetch the full pages and generate a cited answer with an LLM.
 - Evaluate image relevance with Precision@K over a set of test queries.
+
+## Live link - https://visualsearchengine.onrender.com
+ 
+
